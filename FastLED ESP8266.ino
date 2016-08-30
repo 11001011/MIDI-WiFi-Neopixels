@@ -1,6 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////
-// Controlling WS2812B over WiFi using UDP messages received from Processing.
-// GNU P. Lic. 
+//
+// Controlling WS2812B over WiFi using FASTled + UDP messages received from Processing.
+// Free to use, modify and distribute.
 // Dave Stone, Aug 2016.
 //
 ///////////////////////////////////////////////////////////////////////////
