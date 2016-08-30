@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// Controlling WS2812B over WiFi using FASTled + UDP messages received from Processing.
+// Controlling WS2812B over WiFi using FastLED + UDP messages received from Processing.
 // Free to use, modify and distribute.
 // Dave Stone, Aug 2016.
 //
@@ -12,12 +12,12 @@
 #include <elapsedMillis.h>
 
 // LED config
-#define NUM_LEDS 14
-#define DATA_PIN D1
+#define NUM_LEDS 14 // how many LEDs?
+#define DATA_PIN D1 // which pin?
 struct CRGB leds[NUM_LEDS];
 int mappedHue;
 TBlendType    currentBlending;
-#define COOLING  30 // 20 - 100
+#define COOLING  30 // 20 - 100, see the fire animation example in the FastLED lib.
 #define SPARKING 100 // 50 - 200
 bool gReverseDirection = false;
 #define FRAMES_PER_SECOND 15
@@ -902,73 +902,73 @@ void loop() {
     }
   }
   // the fun stuff. i have this setup for an AKAI apc40 mkII. first few sliders, first couple columns of buttons, first few knobs each do something different to our LEDs.
-  if ( statusByte == 176 && param1 == 7 ) {
+  if ( statusByte == 176 && param1 == 7 ) { // a slider for global brightness.
     for (int i = 0; i < NUM_LEDS; i++) {
       FastLED.setBrightness(map(param2, 0, 127, 0, 220));
       FastLED.show();
     }
   }
-  else  if ( statusByte == 177 && param1 == 7 ) {
+  else  if ( statusByte == 177 && param1 == 7 ) { // a slider for blue and brightness.
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = CRGB::Blue;
       FastLED.setBrightness(map(param2, 0, 127, 0, 220));
       FastLED.show();
     }
   }
-  else  if ( statusByte == 178 && param1 == 7 ) {
+  else  if ( statusByte == 178 && param1 == 7 ) { // slider for green and brightness.
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = CRGB::ForestGreen;
       FastLED.setBrightness(map(param2, 0, 127, 0, 220));
       FastLED.show();
     }
   }
-  else  if ( statusByte == 179 && param1 == 7 ) {
+  else  if ( statusByte == 179 && param1 == 7 ) { // slider for red and brightness.
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = CRGB::DarkRed;
       FastLED.setBrightness(map(param2, 0, 127, 0, 220));
       FastLED.show();
     }
   }
-  else if ( statusByte == 176 && param1 == 48 ) {
+  else if ( statusByte == 176 && param1 == 48 ) { // a knob that scrolls through a palette.
     for (int i = 0; i < NUM_LEDS; i++) {
       mappedHue = map(param2, 0, 127, 0, 255);
       leds[i] = ColorFromPalette(zee3, mappedHue);
       FastLED.show();
     }
   }
-  else if ( statusByte == 176 && param1 == 49 ) {
+  else if ( statusByte == 176 && param1 == 49 ) { // another palette knob.
     for (int i = 0; i < NUM_LEDS; i++) {
       mappedHue = map(param2, 0, 127, 0, 255);
       leds[i] = ColorFromPalette(lava, mappedHue);
       FastLED.show();
     }
   }
-  else if ( statusByte == 176 && param1 == 50 ) {
+  else if ( statusByte == 176 && param1 == 50 ) { // another palette knob.
     for (int i = 0; i < NUM_LEDS; i++) {
       mappedHue = map(param2, 0, 127, 0, 255);
       leds[i] = ColorFromPalette(sea, mappedHue);
       FastLED.show();
     }
   }
-  else if ( statusByte == 176 && param1 == 51 ) {
+  else if ( statusByte == 176 && param1 == 51 ) { // and another. 
     for (int i = 0; i < NUM_LEDS; i++) {
       mappedHue = map(param2, 0, 127, 0, 255);
       leds[i] = ColorFromPalette(earth, mappedHue);
       FastLED.show();
     }
   }
-  else if ( statusByte == 144 && param1 == 32 && param2 == 127 ) {
+  else if ( statusByte == 144 && param1 == 32 && param2 == 127 ) { // button that runs a fire animation.
     Fire2012WithPalette();
     FastLED.show();
     FastLED.delay(1000 / FRAMES_PER_SECOND);
   }
-  else if ( statusByte == 128 && param1 == 32 && param2 == 0 ) {
+  else if ( statusByte == 128 && param1 == 32 && param2 == 0 ) { // once the fire button above is released, all LEDs off.
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = CRGB::Black;
       FastLED.show();
     }
   }
-  else if ( statusByte == 144 && param1 == 24 && param2 == 127 ) {
+  else if ( statusByte == 144 && param1 == 24 && param2 == 127 ) { // button that 'breathes' our lights. 
     for (int i = 0; i < 220; i++) {
       FastLED.setBrightness(i);
       FastLED.show();
@@ -981,23 +981,23 @@ void loop() {
     }
   }
   else if ( statusByte == 144 && param1 == 16 && param2 == 127 ) {
-    EVERY_N_MILLISECONDS(thisdelay) {                           // FastLED based non-blocking delay to update/display the sequence.
+    EVERY_N_MILLISECONDS(thisdelay) {                           // button that displays a ripple-like effect.
       ripple2();
     }
     FastLED.show();
   }
-  else if ( statusByte == 144 && param1 == 8 && param2 == 127 ) {
+  else if ( statusByte == 144 && param1 == 8 && param2 == 127 ) { // blue palette fire. 
     IceFireWithPalette();
     FastLED.show();
     FastLED.delay(1000 / FRAMES_PER_SECOND);
   }
-  else if ( statusByte == 128 && param1 == 8 && param2 == 0 ) {
+  else if ( statusByte == 128 && param1 == 8 && param2 == 0 ) { // all black once blue fire released.
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = CRGB::Black;
       FastLED.show();
     }
   }
-  else if ( statusByte == 144 && param1 == 0 && param2 == 127 ) {
+  else if ( statusByte == 144 && param1 == 0 && param2 == 127 ) { // set 'em all to white.
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = CRGB::White;
       FastLED.show();
@@ -1005,7 +1005,7 @@ void loop() {
   }
   else if ( statusByte == 144 && param1 == 33 && param2 == 127 ) {
     {
-      EVERY_N_MILLISECONDS(thisdelay) {                           // FastLED based non-blocking delay to update/display the sequence.
+      EVERY_N_MILLISECONDS(thisdelay) {                           // different color ripple. 
         ripple();
       }
       FastLED.show();
@@ -1013,13 +1013,13 @@ void loop() {
   }
   else if ( statusByte == 144 && param1 == 25 && param2 == 127 ) {
     {
-      EVERY_N_MILLISECONDS(thisdelay) {                           // FastLED based non-blocking delay to update/display the sequence.
+      EVERY_N_MILLISECONDS(thisdelay) {                           // and more ripple.
         ripple3();
       }
       FastLED.show();
     }
   }
-  else if ( statusByte == 144 && param1 == 17 && param2 == 127 ) {
+  else if ( statusByte == 144 && param1 == 17 && param2 == 127 ) { // turn 'em all off.
     for (int i = 0; i < NUM_LEDS; i++) {
       leds[i] = CRGB::Black;
       FastLED.show();
@@ -1027,13 +1027,13 @@ void loop() {
   }
   else if ( statusByte == 144 && param1 == 9 && param2 == 127 ) {
     {
-      EVERY_N_MILLISECONDS(thisdelay) {                           // FastLED based non-blocking delay to update/display the sequence.
+      EVERY_N_MILLISECONDS(thisdelay) {                           // more ripple.
         ripple4();
       }
       FastLED.show();
     }
   }
-    else if ( statusByte == 144 && param1 == 1 && param2 == 127 ) {
+    else if ( statusByte == 144 && param1 == 1 && param2 == 127 ) { // more fire.
     LavaFireWithPalette();
     FastLED.show();
     FastLED.delay(1000 / FRAMES_PER_SECOND);
